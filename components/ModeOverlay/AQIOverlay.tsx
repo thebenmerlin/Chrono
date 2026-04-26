@@ -16,15 +16,26 @@ function aqiColor(aqi: number): string {
   return '#7e0023'
 }
 
-// Full 270° track path (7-o'clock → 5-o'clock going clockwise)
-const TRACK_PATH = (() => {
-  const cx = 100, cy = 100, r = 72
-  const toRad = (d: number) => ((d - 90) * Math.PI) / 180
-  const pts = (deg: number) => [cx + r * Math.cos(toRad(deg)), cy + r * Math.sin(toRad(deg))]
-  const [x1, y1] = pts(135)
-  const [x2, y2] = pts(405)
-  return `M ${x1} ${y1} A ${r} ${r} 0 1 1 ${x2} ${y2}`
-})()
+const CX = 100, CY = 100, R = 72
+
+function ptOnArc(clockDeg: number, radius = R): [number, number] {
+  const rad = ((clockDeg - 90) * Math.PI) / 180
+  return [CX + radius * Math.cos(rad), CY + radius * Math.sin(rad)]
+}
+
+// Full 270° track path: AQI 0 = 135° (4:30), AQI 500 = 405° = 45° (1:30) — must match aqiToMinuteDeg()
+const [x1, y1] = ptOnArc(135)
+const [x2, y2] = ptOnArc(405)
+const TRACK_PATH = `M ${x1} ${y1} A ${R} ${R} 0 1 1 ${x2} ${y2}`
+
+// Tick marks at AQI 0, 100, 200, 300, 400, 500
+const AQI_TICKS = [0, 100, 200, 300, 400, 500].map((v) => {
+  const deg = 135 + (v / 500) * 270
+  const [ox, oy] = ptOnArc(deg, R)
+  const [ix, iy] = ptOnArc(deg, R - 7)
+  const [lx, ly] = ptOnArc(deg, R - 13)
+  return { v, ox, oy, ix, iy, lx, ly }
+})
 
 export default function AQIOverlay({ aqi, label }: AQIOverlayProps) {
   const safeAqi = aqi ?? 0
@@ -33,13 +44,8 @@ export default function AQIOverlay({ aqi, label }: AQIOverlayProps) {
   return (
     <g opacity={0.85}>
       {/* Background track */}
-      <path
-        d={TRACK_PATH}
-        fill="none"
-        stroke="var(--bezel-border)"
-        strokeWidth={5}
-        strokeLinecap="round"
-      />
+      <path d={TRACK_PATH} fill="none" stroke="var(--bezel-border)" strokeWidth={5} strokeLinecap="round" />
+
       {/* Animated fill arc */}
       {safeAqi > 0 && (
         <motion.path
@@ -53,25 +59,29 @@ export default function AQIOverlay({ aqi, label }: AQIOverlayProps) {
           transition={{ duration: 1.2, ease: 'easeOut' }}
         />
       )}
-      {/* Center readout */}
-      <text
-        x={100} y={98}
-        textAnchor="middle"
-        fontSize="14"
-        fill="var(--text-primary)"
-        fontFamily="var(--font-mono)"
-        fontWeight="bold"
-      >
-        {safeAqi > 0 ? safeAqi : '—'}
+
+      {/* Tick marks + scale labels */}
+      {AQI_TICKS.map(({ v, ox, oy, ix, iy, lx, ly }) => (
+        <g key={v}>
+          <line x1={ix} y1={iy} x2={ox} y2={oy} stroke="var(--text-secondary)" strokeWidth={v % 200 === 0 ? 1.2 : 0.7} />
+          <text
+            x={lx} y={ly + 1.5}
+            textAnchor="middle"
+            fontSize="4"
+            fill="var(--text-secondary)"
+            fontFamily="var(--font-mono)"
+          >
+            {v}
+          </text>
+        </g>
+      ))}
+
+      {/* AQI value — tucked below center so hand can point freely */}
+      <text x={100} y={120} textAnchor="middle" fontSize="8" fill="var(--text-secondary)" fontFamily="var(--font-mono)">
+        {safeAqi > 0 ? `AQI ${safeAqi}` : '—'}
       </text>
       {label && (
-        <text
-          x={100} y={112}
-          textAnchor="middle"
-          fontSize="6"
-          fill="var(--text-secondary)"
-          fontFamily="var(--font-mono)"
-        >
+        <text x={100} y={130} textAnchor="middle" fontSize="5.5" fill="var(--text-secondary)" fontFamily="var(--font-mono)">
           {label}
         </text>
       )}

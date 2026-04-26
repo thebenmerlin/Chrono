@@ -112,6 +112,7 @@ export default function WatchFace({
           compassBearing={compassBearing}
           geoHeading={geoHeading}
           outdoorC={outdoorC}
+          aqi={aqi}
           speedKmh={speedKmh}
           limitKmh={limitKmh}
           frozenDegrees={frozenDegrees}

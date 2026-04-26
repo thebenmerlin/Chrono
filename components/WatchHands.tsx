@@ -14,16 +14,26 @@ interface WatchHandsProps {
   compassBearing?: number | null
   geoHeading?: number | null
   outdoorC?: number | null
+  aqi?: number | null
   speedKmh?: number | null
   limitKmh?: number | null
   frozenDegrees?: { hour: number; minute: number; second: number }
 }
 
-// Map outdoor temp (-20 to 50°C) onto a 270° arc rising from 6 o'clock
-function tempToHourDeg(c: number): number {
-  const TEMP_MIN = -20, TEMP_MAX = 50, SWEEP = 270
+// Map outdoor temp (-20 to 50°C) onto the same 270° arc as AQI:
+// -20°C = 135° (4-5 o'clock), 50°C = 405° (1-2 o'clock)
+// Must match TempOverlay arc track.
+function tempToMinuteDeg(c: number): number {
+  const TEMP_MIN = -20, TEMP_MAX = 50
   const clamped = Math.max(TEMP_MIN, Math.min(TEMP_MAX, c))
-  return 180 - ((clamped - TEMP_MIN) / (TEMP_MAX - TEMP_MIN)) * SWEEP
+  return 135 + ((clamped - TEMP_MIN) / (TEMP_MAX - TEMP_MIN)) * 270
+}
+
+// Map AQI (0–500) onto the 270° arc track drawn in AQIOverlay:
+// AQI 0 = 135° (4-5 o'clock start), AQI 500 = 405° (1-2 o'clock end)
+function aqiToMinuteDeg(aqi: number): number {
+  const clamped = Math.max(0, Math.min(500, aqi))
+  return 135 + (clamped / 500) * 270
 }
 
 // Map speed to minute hand degrees: 0 km/h = 210° (7-o'clock), max = 510° (5-o'clock)
@@ -37,6 +47,7 @@ export default function WatchHands({
   compassBearing,
   geoHeading,
   outdoorC,
+  aqi,
   speedKmh,
   limitKmh,
   frozenDegrees,
@@ -90,8 +101,13 @@ export default function WatchHands({
     minuteDeg = geoHeading ?? clockDeg.minute
     showSecond = false
   } else if (mode === 'temperature' && outdoorC !== null && outdoorC !== undefined) {
-    hourDeg = tempToHourDeg(outdoorC)
-    minuteDeg = clockDeg.minute
+    hourDeg = 0  // parked at 12 behind center pin
+    minuteDeg = tempToMinuteDeg(outdoorC)
+    showSecond = false
+  } else if (mode === 'aqi' && aqi !== null && aqi !== undefined) {
+    // Hour hand stays at 12 (hidden behind pin), minute hand is the gauge needle
+    hourDeg = 0
+    minuteDeg = aqiToMinuteDeg(aqi)
     showSecond = false
   } else if (mode === 'speed') {
     const maxSpeed = limitKmh ? Math.max(limitKmh * 1.5, 120) : 180

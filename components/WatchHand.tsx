@@ -1,6 +1,7 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { useEffect, useRef } from 'react'
+import { useMotionValue, animate } from 'framer-motion'
 
 interface WatchHandProps {
   degrees: number
@@ -27,34 +28,35 @@ export default function WatchHand({
   // Hand is drawn pointing UP (to 12), rotated by degrees
   const cx = 100
   const cy = 100
-  const r = 90 * length    // tip distance from center
-  const tail = 90 * 0.15  // tail length behind center
+  const r = 90 * length
+  const tail = 90 * 0.15
 
-  const springTransition = transition ?? {
-    type: 'spring',
-    stiffness: 80,
-    damping: 18,
-    mass: 1.2,
-  }
+  const stiffness = transition?.stiffness ?? 80
+  const damping   = transition?.damping   ?? 18
+  const mass      = transition?.mass      ?? 1.2
+
+  // Bypass Framer Motion's CSS transform system entirely.
+  // useMotionValue + animate() drives the value; onUpdate writes it
+  // directly as a native SVG `transform` attribute which every browser
+  // supports unconditionally.
+  const rotation = useMotionValue(degrees)
+  const gRef = useRef<SVGGElement>(null)
+
+  useEffect(() => {
+    const controls = animate(rotation, degrees, {
+      type: 'spring',
+      stiffness,
+      damping,
+      mass,
+      onUpdate: (val) => {
+        gRef.current?.setAttribute('transform', `rotate(${val}, 100, 100)`)
+      },
+    })
+    return () => controls.stop()
+  }, [rotation, degrees, stiffness, damping, mass])
 
   return (
-    <motion.g
-      className={className}
-      animate={{ rotate: degrees }}
-      transition={springTransition}
-      style={{ transformBox: 'view-box' as const }}
-      transformTemplate={(props) => {
-        // CSS individual `rotate` property has patchy SVG support in some browsers.
-        // Force a classic `transform:` string instead, rotating around the SVG center
-        // (100, 100) using the translate–rotate–translate trick.
-        // With transformBox:view-box, 50% = 100 SVG user units = watch center.
-        const deg =
-          typeof props.rotate === 'number'
-            ? props.rotate
-            : parseFloat(String(props.rotate)) || 0
-        return `translate(50%, 50%) rotate(${deg}deg) translate(-50%, -50%)`
-      }}
-    >
+    <g ref={gRef} className={className}>
       {shadow && (
         <line
           x1={cx + 1}
@@ -97,6 +99,6 @@ export default function WatchHand({
           opacity={0.9}
         />
       )}
-    </motion.g>
+    </g>
   )
 }

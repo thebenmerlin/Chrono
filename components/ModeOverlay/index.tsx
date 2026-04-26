@@ -11,7 +11,6 @@ import WorldClockOverlay from './WorldClockOverlay'
 import PlanetOverlay from './PlanetOverlay'
 import { useWorldClock } from '@/hooks/useWorldClock'
 import { getPlanetaryTime } from '@/lib/planetaryTime'
-import { useMemo } from 'react'
 
 interface ModeOverlayProps {
   outdoorC?: number | null
@@ -26,10 +25,10 @@ export default function ModeOverlay({ outdoorC, aqi, aqiLabel, speedKmh, limitKm
   const { mode, params } = useMode()
   const worldClock = useWorldClock(mode === 'worldclock' ? params.timezone : undefined)
 
-  const planetTime = useMemo(() => {
-    if (mode !== 'planet' || !params.planet) return null
-    return getPlanetaryTime(params.planet)
-  }, [mode, params.planet])
+  // Call directly (no useMemo) — getPlanetaryTime reads Date.now() internally
+  const planetTime = (mode === 'planet' && params.planet)
+    ? getPlanetaryTime(params.planet)
+    : null
 
   function renderOverlay() {
     switch (mode) {
@@ -45,7 +44,7 @@ export default function ModeOverlay({ outdoorC, aqi, aqiLabel, speedKmh, limitKm
       case 'worldclock':
         return <WorldClockOverlay city={worldClock?.cityLabel} utcOffset={worldClock?.utcOffset} />
       case 'planet':
-        return <PlanetOverlay planet={params.planet} timeLabel={planetTime?.label} />
+        return <PlanetOverlay planet={params.planet} timeLabel={planetTime?.label} timeFactor={planetTime?.timeFactor} />
       default:
         return <NullOverlay />
     }

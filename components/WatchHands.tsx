@@ -6,7 +6,6 @@ import { useWorldClock } from '@/hooks/useWorldClock'
 import { useModeTransition } from '@/hooks/useModeTransition'
 import { getPlanetaryTime } from '@/lib/planetaryTime'
 import { getSpeedAlertLevel, computeMaxSpeed } from '@/lib/speedAlert'
-import { useMemo } from 'react'
 import { motion } from 'framer-motion'
 import WatchHand from './WatchHand'
 
@@ -57,10 +56,12 @@ export default function WatchHands({
   const worldClock = useWorldClock(mode === 'worldclock' ? params.timezone : undefined)
   const { phase } = useModeTransition(mode)
 
-  const planetaryTime = useMemo(() => {
-    if (mode !== 'planet' || !params.planet) return null
-    return getPlanetaryTime(params.planet)
-  }, [mode, params.planet])
+  // Call getPlanetaryTime directly (no useMemo) — it reads Date.now() internally,
+  // so memoizing by [mode, params.planet] would freeze the hands mid-animation.
+  // WatchHands re-renders at ~50ms via useTime(), so this stays fresh automatically.
+  const planetaryTime = (mode === 'planet' && params.planet)
+    ? getPlanetaryTime(params.planet)
+    : null
 
   const inTransition = phase === 'spin-in' || phase === 'hold'
 
@@ -84,8 +85,9 @@ export default function WatchHands({
   } else if (mode === 'planet' && planetaryTime) {
     hourDeg = planetaryTime.hourDeg
     minuteDeg = planetaryTime.minuteDeg
-    secondDeg = 0
-    showSecond = false
+    // Second hand sweeps at planet's rotation rate — visual proof of time dilation
+    secondDeg = planetaryTime.secondDeg
+    showSecond = true
   } else if (mode === 'compass' && compassBearing !== null && compassBearing !== undefined) {
     const directionOffset =
       params.direction === 'north' ? 0

@@ -1,0 +1,43 @@
+# Next.js
+.next/
+out/
+build/
+*.tsbuildinfo
+
+# Node
+node_modules/
+npm-debug.log
+npm-error.log
+yarn-debug.log
+yarn-error.log
+pnpm-debug.log
+pnpm-error.log
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+.env.production.local
+
+# IDE & Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+*.sublime-project
+*.sublime-workspace
+
+# OS
+*.pem
+*.key
+
+# Testing
+coverage/
+.nyc_output/
+
+# Misc
+.turbo/
+dist/

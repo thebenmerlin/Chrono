@@ -10,6 +10,7 @@ interface WatchHandProps {
   className?: string
   hasLumeDot?: boolean
   shadow?: boolean
+  transition?: { type: string; stiffness: number; damping: number; mass: number }
 }
 
 export default function WatchHand({
@@ -20,6 +21,7 @@ export default function WatchHand({
   className = '',
   hasLumeDot = false,
   shadow = true,
+  transition,
 }: WatchHandProps) {
   // SVG viewBox is 200x200, center is 100,100
   // Hand is drawn pointing UP (to 12), rotated by degrees
@@ -28,17 +30,19 @@ export default function WatchHand({
   const r = 90 * length    // tip distance from center
   const tail = 90 * 0.15  // tail length behind center
 
+  const springTransition = transition ?? {
+    type: 'spring',
+    stiffness: 80,
+    damping: 18,
+    mass: 1.2,
+  }
+
   return (
     <motion.g
       className={className}
       style={{ transformOrigin: `${cx}px ${cy}px` }}
       animate={{ rotate: degrees }}
-      transition={{
-        type: 'spring',
-        stiffness: 80,
-        damping: 18,
-        mass: 1.2,
-      }}
+      transition={springTransition}
     >
       {shadow && (
         <line

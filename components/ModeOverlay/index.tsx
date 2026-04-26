@@ -15,14 +15,13 @@ import { useMemo } from 'react'
 
 interface ModeOverlayProps {
   outdoorC?: number | null
-  bodyC?: number | null
   aqi?: number | null
   aqiLabel?: string | null
   speedKmh?: number | null
   limitKmh?: number | null
 }
 
-export default function ModeOverlay({ outdoorC, bodyC, aqi, aqiLabel, speedKmh, limitKmh }: ModeOverlayProps) {
+export default function ModeOverlay({ outdoorC, aqi, aqiLabel, speedKmh, limitKmh }: ModeOverlayProps) {
   const { mode, params } = useMode()
   const worldClock = useWorldClock(mode === 'worldclock' ? params.timezone : undefined)
 
@@ -37,7 +36,7 @@ export default function ModeOverlay({ outdoorC, bodyC, aqi, aqiLabel, speedKmh, 
       case 'navigate':
         return <CompassOverlay />
       case 'temperature':
-        return <TempOverlay outdoorC={outdoorC} bodyC={bodyC} />
+        return <TempOverlay outdoorC={outdoorC} />
       case 'aqi':
         return <AQIOverlay aqi={aqi} label={aqiLabel} />
       case 'speed':

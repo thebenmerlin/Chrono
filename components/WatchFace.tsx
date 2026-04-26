@@ -1,7 +1,6 @@
 'use client'
 
 import { useMode } from '@/context/ModeContext'
-import { useCompass } from '@/hooks/useCompass'
 import WatchHands from './WatchHands'
 import CenterPin from './CenterPin'
 import CenterLabel from './CenterLabel'
@@ -16,12 +15,14 @@ interface WatchFaceProps {
   isRecognising: boolean
   alert: AlertState
   onTap: () => void
+  compassBearing?: number | null
+  geoHeading?: number | null
   outdoorC?: number | null
-  bodyC?: number | null
   aqi?: number | null
   aqiLabel?: string | null
   speedKmh?: number | null
   limitKmh?: number | null
+  frozenDegrees?: { hour: number; minute: number; second: number }
 }
 
 export default function WatchFace({
@@ -30,15 +31,16 @@ export default function WatchFace({
   isRecognising,
   alert,
   onTap,
+  compassBearing,
+  geoHeading,
   outdoorC,
-  bodyC,
   aqi,
   aqiLabel,
   speedKmh,
   limitKmh,
+  frozenDegrees,
 }: WatchFaceProps) {
   const { mode } = useMode()
-  const compass = useCompass()
 
   const isDark = mode === 'planet'
 
@@ -79,7 +81,6 @@ export default function WatchFace({
         {/* Mode overlay (drawn before hands so hands are on top) */}
         <ModeOverlay
           outdoorC={outdoorC}
-          bodyC={bodyC}
           aqi={aqi}
           aqiLabel={aqiLabel}
           speedKmh={speedKmh}
@@ -107,7 +108,14 @@ export default function WatchFace({
         })}
 
         {/* Hands */}
-        <WatchHands compassBearing={compass.bearing} />
+        <WatchHands
+          compassBearing={compassBearing}
+          geoHeading={geoHeading}
+          outdoorC={outdoorC}
+          speedKmh={speedKmh}
+          limitKmh={limitKmh}
+          frozenDegrees={frozenDegrees}
+        />
 
         {/* Center label */}
         <CenterLabel mode={mode} isListening={!isMuted && isHearing} />

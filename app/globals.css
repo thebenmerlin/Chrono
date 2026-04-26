@@ -88,3 +88,11 @@ body {
     z-index: 0;
   }
 }
+
+/* Hide scrollbars while keeping scroll functionality */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}

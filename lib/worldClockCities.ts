@@ -1,0 +1,176 @@
+export interface WorldCity {
+  name: string      // Display label, e.g. "New York"
+  timezone: string  // IANA timezone identifier
+  region: string    // Continent / region for grouping
+}
+
+// ~100 major cities covering every populated UTC offset
+export const WORLD_CLOCK_CITIES: WorldCity[] = [
+  // Americas — West
+  { name: 'Honolulu',       timezone: 'Pacific/Honolulu',              region: 'Americas' },
+  { name: 'Anchorage',      timezone: 'America/Anchorage',             region: 'Americas' },
+  { name: 'Los Angeles',    timezone: 'America/Los_Angeles',           region: 'Americas' },
+  { name: 'Vancouver',      timezone: 'America/Vancouver',             region: 'Americas' },
+  { name: 'Tijuana',        timezone: 'America/Tijuana',               region: 'Americas' },
+  { name: 'Phoenix',        timezone: 'America/Phoenix',               region: 'Americas' },
+  { name: 'Denver',         timezone: 'America/Denver',                region: 'Americas' },
+  { name: 'Calgary',        timezone: 'America/Edmonton',              region: 'Americas' },
+  { name: 'Chicago',        timezone: 'America/Chicago',               region: 'Americas' },
+  { name: 'Mexico City',    timezone: 'America/Mexico_City',           region: 'Americas' },
+  { name: 'Winnipeg',       timezone: 'America/Winnipeg',              region: 'Americas' },
+  { name: 'New York',       timezone: 'America/New_York',              region: 'Americas' },
+  { name: 'Toronto',        timezone: 'America/Toronto',               region: 'Americas' },
+  { name: 'Miami',          timezone: 'America/New_York',              region: 'Americas' },
+  { name: 'Atlanta',        timezone: 'America/New_York',              region: 'Americas' },
+  { name: 'Havana',         timezone: 'America/Havana',                region: 'Americas' },
+  { name: 'Bogotá',         timezone: 'America/Bogota',                region: 'Americas' },
+  { name: 'Lima',           timezone: 'America/Lima',                  region: 'Americas' },
+  { name: 'Halifax',        timezone: 'America/Halifax',               region: 'Americas' },
+  { name: 'Caracas',        timezone: 'America/Caracas',               region: 'Americas' },
+  { name: 'La Paz',         timezone: 'America/La_Paz',                region: 'Americas' },
+  { name: 'Santiago',       timezone: 'America/Santiago',              region: 'Americas' },
+  { name: 'São Paulo',      timezone: 'America/Sao_Paulo',             region: 'Americas' },
+  { name: 'Buenos Aires',   timezone: 'America/Argentina/Buenos_Aires', region: 'Americas' },
+  { name: 'Montevideo',     timezone: 'America/Montevideo',            region: 'Americas' },
+  { name: 'Reykjavík',      timezone: 'Atlantic/Reykjavik',            region: 'Americas' },
+
+  // Europe
+  { name: 'London',         timezone: 'Europe/London',                 region: 'Europe' },
+  { name: 'Dublin',         timezone: 'Europe/Dublin',                 region: 'Europe' },
+  { name: 'Lisbon',         timezone: 'Europe/Lisbon',                 region: 'Europe' },
+  { name: 'Paris',          timezone: 'Europe/Paris',                  region: 'Europe' },
+  { name: 'Madrid',         timezone: 'Europe/Madrid',                 region: 'Europe' },
+  { name: 'Berlin',         timezone: 'Europe/Berlin',                 region: 'Europe' },
+  { name: 'Rome',           timezone: 'Europe/Rome',                   region: 'Europe' },
+  { name: 'Amsterdam',      timezone: 'Europe/Amsterdam',              region: 'Europe' },
+  { name: 'Brussels',       timezone: 'Europe/Brussels',               region: 'Europe' },
+  { name: 'Zurich',         timezone: 'Europe/Zurich',                 region: 'Europe' },
+  { name: 'Vienna',         timezone: 'Europe/Vienna',                 region: 'Europe' },
+  { name: 'Prague',         timezone: 'Europe/Prague',                 region: 'Europe' },
+  { name: 'Warsaw',         timezone: 'Europe/Warsaw',                 region: 'Europe' },
+  { name: 'Stockholm',      timezone: 'Europe/Stockholm',              region: 'Europe' },
+  { name: 'Oslo',           timezone: 'Europe/Oslo',                   region: 'Europe' },
+  { name: 'Copenhagen',     timezone: 'Europe/Copenhagen',             region: 'Europe' },
+  { name: 'Helsinki',       timezone: 'Europe/Helsinki',               region: 'Europe' },
+  { name: 'Athens',         timezone: 'Europe/Athens',                 region: 'Europe' },
+  { name: 'Bucharest',      timezone: 'Europe/Bucharest',              region: 'Europe' },
+  { name: 'Budapest',       timezone: 'Europe/Budapest',               region: 'Europe' },
+  { name: 'Kyiv',           timezone: 'Europe/Kiev',                   region: 'Europe' },
+  { name: 'Istanbul',       timezone: 'Europe/Istanbul',               region: 'Europe' },
+  { name: 'Moscow',         timezone: 'Europe/Moscow',                 region: 'Europe' },
+
+  // Africa & Middle East
+  { name: 'Casablanca',     timezone: 'Africa/Casablanca',             region: 'Africa' },
+  { name: 'Accra',          timezone: 'Africa/Accra',                  region: 'Africa' },
+  { name: 'Lagos',          timezone: 'Africa/Lagos',                  region: 'Africa' },
+  { name: 'Nairobi',        timezone: 'Africa/Nairobi',                region: 'Africa' },
+  { name: 'Cairo',          timezone: 'Africa/Cairo',                  region: 'Africa' },
+  { name: 'Johannesburg',   timezone: 'Africa/Johannesburg',           region: 'Africa' },
+  { name: 'Addis Ababa',    timezone: 'Africa/Addis_Ababa',            region: 'Africa' },
+  { name: 'Khartoum',       timezone: 'Africa/Khartoum',               region: 'Africa' },
+  { name: 'Riyadh',         timezone: 'Asia/Riyadh',                   region: 'Middle East' },
+  { name: 'Kuwait',         timezone: 'Asia/Kuwait',                   region: 'Middle East' },
+  { name: 'Baghdad',        timezone: 'Asia/Baghdad',                  region: 'Middle East' },
+  { name: 'Tehran',         timezone: 'Asia/Tehran',                   region: 'Middle East' },
+  { name: 'Dubai',          timezone: 'Asia/Dubai',                    region: 'Middle East' },
+  { name: 'Muscat',         timezone: 'Asia/Muscat',                   region: 'Middle East' },
+  { name: 'Jerusalem',      timezone: 'Asia/Jerusalem',                region: 'Middle East' },
+  { name: 'Kabul',          timezone: 'Asia/Kabul',                    region: 'Middle East' },
+
+  // Asia
+  { name: 'Karachi',        timezone: 'Asia/Karachi',                  region: 'Asia' },
+  { name: 'Tashkent',       timezone: 'Asia/Tashkent',                 region: 'Asia' },
+  { name: 'Mumbai',         timezone: 'Asia/Kolkata',                  region: 'Asia' },
+  { name: 'Delhi',          timezone: 'Asia/Kolkata',                  region: 'Asia' },
+  { name: 'Kolkata',        timezone: 'Asia/Kolkata',                  region: 'Asia' },
+  { name: 'Colombo',        timezone: 'Asia/Colombo',                  region: 'Asia' },
+  { name: 'Kathmandu',      timezone: 'Asia/Kathmandu',                region: 'Asia' },
+  { name: 'Dhaka',          timezone: 'Asia/Dhaka',                    region: 'Asia' },
+  { name: 'Almaty',         timezone: 'Asia/Almaty',                   region: 'Asia' },
+  { name: 'Yangon',         timezone: 'Asia/Rangoon',                  region: 'Asia' },
+  { name: 'Bangkok',        timezone: 'Asia/Bangkok',                  region: 'Asia' },
+  { name: 'Jakarta',        timezone: 'Asia/Jakarta',                  region: 'Asia' },
+  { name: 'Ho Chi Minh',    timezone: 'Asia/Ho_Chi_Minh',              region: 'Asia' },
+  { name: 'Hanoi',          timezone: 'Asia/Ho_Chi_Minh',              region: 'Asia' },
+  { name: 'Singapore',      timezone: 'Asia/Singapore',                region: 'Asia' },
+  { name: 'Kuala Lumpur',   timezone: 'Asia/Kuala_Lumpur',             region: 'Asia' },
+  { name: 'Manila',         timezone: 'Asia/Manila',                   region: 'Asia' },
+  { name: 'Hong Kong',      timezone: 'Asia/Hong_Kong',                region: 'Asia' },
+  { name: 'Shanghai',       timezone: 'Asia/Shanghai',                 region: 'Asia' },
+  { name: 'Beijing',        timezone: 'Asia/Shanghai',                 region: 'Asia' },
+  { name: 'Taipei',         timezone: 'Asia/Taipei',                   region: 'Asia' },
+  { name: 'Seoul',          timezone: 'Asia/Seoul',                    region: 'Asia' },
+  { name: 'Tokyo',          timezone: 'Asia/Tokyo',                    region: 'Asia' },
+
+  // Oceania
+  { name: 'Perth',          timezone: 'Australia/Perth',               region: 'Oceania' },
+  { name: 'Darwin',         timezone: 'Australia/Darwin',              region: 'Oceania' },
+  { name: 'Adelaide',       timezone: 'Australia/Adelaide',            region: 'Oceania' },
+  { name: 'Brisbane',       timezone: 'Australia/Brisbane',            region: 'Oceania' },
+  { name: 'Sydney',         timezone: 'Australia/Sydney',              region: 'Oceania' },
+  { name: 'Melbourne',      timezone: 'Australia/Melbourne',           region: 'Oceania' },
+  { name: 'Auckland',       timezone: 'Pacific/Auckland',              region: 'Oceania' },
+  { name: 'Suva',           timezone: 'Pacific/Fiji',                  region: 'Oceania' },
+
+  // UTC reference
+  { name: 'UTC',            timezone: 'UTC',                           region: 'UTC' },
+]
+
+// Build a lookup map for voice commands: all lowercase variations → IANA timezone
+export const VOICE_TIMEZONE_MAP: Record<string, string> = Object.fromEntries(
+  WORLD_CLOCK_CITIES.flatMap((c) => {
+    const tz = c.timezone
+    const nameKey = c.name.toLowerCase().replace(/[áàâä]/g, 'a').replace(/[éèêë]/g, 'e')
+                          .replace(/[óòôö]/g, 'o').replace(/[úùûü]/g, 'u').replace(/ñ/g, 'n')
+    return [[nameKey, tz], [c.name.toLowerCase(), tz]]
+  })
+)
+
+// Extra country → timezone aliases on top of the city list
+export const COUNTRY_TIMEZONE_MAP: Record<string, string> = {
+  'japan':         'Asia/Tokyo',
+  'india':         'Asia/Kolkata',
+  'china':         'Asia/Shanghai',
+  'australia':     'Australia/Sydney',
+  'usa':           'America/New_York',
+  'america':       'America/New_York',
+  'uk':            'Europe/London',
+  'england':       'Europe/London',
+  'france':        'Europe/Paris',
+  'germany':       'Europe/Berlin',
+  'italy':         'Europe/Rome',
+  'spain':         'Europe/Madrid',
+  'russia':        'Europe/Moscow',
+  'brazil':        'America/Sao_Paulo',
+  'argentina':     'America/Argentina/Buenos_Aires',
+  'mexico':        'America/Mexico_City',
+  'canada':        'America/Toronto',
+  'korea':         'Asia/Seoul',
+  'uae':           'Asia/Dubai',
+  'singapore':     'Asia/Singapore',
+  'indonesia':     'Asia/Jakarta',
+  'egypt':         'Africa/Cairo',
+  'south africa':  'Africa/Johannesburg',
+  'nigeria':       'Africa/Lagos',
+  'kenya':         'Africa/Nairobi',
+  'turkey':        'Europe/Istanbul',
+  'greece':        'Europe/Athens',
+  'sweden':        'Europe/Stockholm',
+  'norway':        'Europe/Oslo',
+  'netherlands':   'Europe/Amsterdam',
+  'switzerland':   'Europe/Zurich',
+  'portugal':      'Europe/Lisbon',
+  'poland':        'Europe/Warsaw',
+  'ukraine':       'Europe/Kiev',
+  'israel':        'Asia/Jerusalem',
+  'saudi arabia':  'Asia/Riyadh',
+  'pakistan':      'Asia/Karachi',
+  'bangladesh':    'Asia/Dhaka',
+  'thailand':      'Asia/Bangkok',
+  'vietnam':       'Asia/Ho_Chi_Minh',
+  'philippines':   'Asia/Manila',
+  'malaysia':      'Asia/Kuala_Lumpur',
+  'new zealand':   'Pacific/Auckland',
+  'hawaii':        'Pacific/Honolulu',
+  'alaska':        'America/Anchorage',
+}

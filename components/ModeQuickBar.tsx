@@ -21,7 +21,11 @@ export default function ModeQuickBar() {
       {MODES.map((m) => (
         <button
           key={m.id}
-          onClick={() => setMode(m.id, m.id === 'planet' ? { planet: 'mars' } : {})}
+          onClick={() => {
+            if (m.id === 'planet') return setMode('planet', { planet: 'mars' })
+            if (m.id === 'worldclock') return setMode('worldclock', { timezone: 'UTC' })
+            setMode(m.id, {})
+          }}
           aria-label={m.label}
           className="flex flex-col items-center gap-0.5 opacity-60 hover:opacity-100 active:opacity-100 transition-opacity"
           style={{ color: mode === m.id ? 'var(--accent)' : 'var(--text-secondary)' }}

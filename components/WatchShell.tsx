@@ -19,6 +19,7 @@ import StatusLine from './StatusLine'
 import ThemeToggle from './ThemeToggle'
 import VoiceTrigger from './VoiceTrigger'
 import ModeQuickBar from './ModeQuickBar'
+import WorldClockPicker from './WorldClockPicker'
 
 const GPS_MODES = new Set(['compass', 'navigate', 'temperature', 'aqi', 'speed'])
 
@@ -195,6 +196,7 @@ function WatchApp() {
         </div>
 
         <StatusLine text={statusText()} />
+        {mode === 'worldclock' && <WorldClockPicker />}
         <ModeQuickBar />
       </div>
     </main>

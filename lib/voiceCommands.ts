@@ -1,4 +1,5 @@
 import type { Mode, ModeParams } from '@/context/ModeContext'
+import { VOICE_TIMEZONE_MAP, COUNTRY_TIMEZONE_MAP } from '@/lib/worldClockCities'
 
 export interface ParsedCommand {
   mode: Mode
@@ -6,127 +7,23 @@ export interface ParsedCommand {
   raw: string
 }
 
-// City/country → IANA timezone map (commonly spoken names)
-const TIMEZONE_MAP: Record<string, string> = {
-  // Countries
-  'japan': 'Asia/Tokyo',
-  'india': 'Asia/Kolkata',
-  'china': 'Asia/Shanghai',
-  'australia': 'Australia/Sydney',
-  'usa': 'America/New_York',
-  'uk': 'Europe/London',
-  'england': 'Europe/London',
-  'france': 'Europe/Paris',
-  'germany': 'Europe/Berlin',
-  'italy': 'Europe/Rome',
-  'spain': 'Europe/Madrid',
-  'russia': 'Europe/Moscow',
-  'brazil': 'America/Sao_Paulo',
-  'argentina': 'America/Argentina/Buenos_Aires',
-  'mexico': 'America/Mexico_City',
-  'canada': 'America/Toronto',
-  'korea': 'Asia/Seoul',
-  'uae': 'Asia/Dubai',
-  'singapore-country': 'Asia/Singapore',
-  'indonesia': 'Asia/Jakarta',
-  'egypt': 'Africa/Cairo',
-  'south africa': 'Africa/Johannesburg',
-  'nigeria': 'Africa/Lagos',
-  'kenya': 'Africa/Nairobi',
-  'turkey': 'Europe/Istanbul',
-  'greece': 'Europe/Athens',
-  'sweden': 'Europe/Stockholm',
-  'norway': 'Europe/Oslo',
-  'netherlands': 'Europe/Amsterdam',
-  'switzerland': 'Europe/Zurich',
-  'portugal': 'Europe/Lisbon',
-  'poland': 'Europe/Warsaw',
-  'ukraine': 'Europe/Kiev',
-  'israel': 'Asia/Jerusalem',
-  'saudi arabia': 'Asia/Riyadh',
-  'pakistan': 'Asia/Karachi',
-  'bangladesh': 'Asia/Dhaka',
-  'thailand': 'Asia/Bangkok',
-  'vietnam': 'Asia/Ho_Chi_Minh',
-  'philippines': 'Asia/Manila',
-  'malaysia': 'Asia/Kuala_Lumpur',
-  'new zealand': 'Pacific/Auckland',
-  // Cities
-  'tokyo': 'Asia/Tokyo',
-  'london': 'Europe/London',
-  'paris': 'Europe/Paris',
-  'new york': 'America/New_York',
-  'los angeles': 'America/Los_Angeles',
-  'chicago': 'America/Chicago',
-  'toronto': 'America/Toronto',
-  'sydney': 'Australia/Sydney',
-  'melbourne': 'Australia/Melbourne',
-  'dubai': 'Asia/Dubai',
-  'singapore': 'Asia/Singapore',
-  'hong kong': 'Asia/Hong_Kong',
-  'shanghai': 'Asia/Shanghai',
-  'beijing': 'Asia/Shanghai',
-  'seoul': 'Asia/Seoul',
-  'moscow': 'Europe/Moscow',
-  'berlin': 'Europe/Berlin',
-  'madrid': 'Europe/Madrid',
-  'rome': 'Europe/Rome',
-  'amsterdam': 'Europe/Amsterdam',
-  'zurich': 'Europe/Zurich',
-  'istanbul': 'Europe/Istanbul',
-  'cairo': 'Africa/Cairo',
-  'mumbai': 'Asia/Kolkata',
-  'delhi': 'Asia/Kolkata',
-  'kolkata': 'Asia/Kolkata',
-  'karachi': 'Asia/Karachi',
-  'dhaka': 'Asia/Dhaka',
-  'jakarta': 'Asia/Jakarta',
-  'bangkok': 'Asia/Bangkok',
-  'kuala lumpur': 'Asia/Kuala_Lumpur',
-  'manila': 'Asia/Manila',
-  'ho chi minh': 'Asia/Ho_Chi_Minh',
-  'riyadh': 'Asia/Riyadh',
-  'tehran': 'Asia/Tehran',
-  'nairobi': 'Africa/Nairobi',
-  'lagos': 'Africa/Lagos',
-  'johannesburg': 'Africa/Johannesburg',
-  'sao paulo': 'America/Sao_Paulo',
-  'buenos aires': 'America/Argentina/Buenos_Aires',
-  'mexico city': 'America/Mexico_City',
-  'lima': 'America/Lima',
-  'bogota': 'America/Bogota',
-  'santiago': 'America/Santiago',
-  'lisbon': 'Europe/Lisbon',
-  'oslo': 'Europe/Oslo',
-  'stockholm': 'Europe/Stockholm',
-  'helsinki': 'Europe/Helsinki',
-  'warsaw': 'Europe/Warsaw',
-  'athens': 'Europe/Athens',
-  'vienna': 'Europe/Vienna',
-  'brussels': 'Europe/Brussels',
-  'prague': 'Europe/Prague',
-  'budapest': 'Europe/Budapest',
-  'bucharest': 'Europe/Bucharest',
-  'reykjavik': 'Atlantic/Reykjavik',
-  'hawaii': 'Pacific/Honolulu',
-  'honolulu': 'Pacific/Honolulu',
-  'anchorage': 'America/Anchorage',
-  'alaska': 'America/Anchorage',
-}
-
 const PLANET_NAMES = ['mercury', 'venus', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune']
 
 function extractTimezone(transcript: string): string | undefined {
   const lower = transcript.toLowerCase()
-  // Match "time in X", "what time in X", "time at X"
   const match = lower.match(/time\s+(?:in|at|for)\s+(.+)$/)
   const location = match?.[1]?.trim() ?? ''
 
-  // Try exact match first
-  if (TIMEZONE_MAP[location]) return TIMEZONE_MAP[location]
+  // Exact match in city list first
+  if (VOICE_TIMEZONE_MAP[location]) return VOICE_TIMEZONE_MAP[location]
+  // Then country aliases
+  if (COUNTRY_TIMEZONE_MAP[location]) return COUNTRY_TIMEZONE_MAP[location]
 
-  // Try partial match
-  for (const [key, tz] of Object.entries(TIMEZONE_MAP)) {
+  // Partial match against city names
+  for (const [key, tz] of Object.entries(VOICE_TIMEZONE_MAP)) {
+    if (location.includes(key) || key.includes(location)) return tz
+  }
+  for (const [key, tz] of Object.entries(COUNTRY_TIMEZONE_MAP)) {
     if (location.includes(key) || key.includes(location)) return tz
   }
   return undefined

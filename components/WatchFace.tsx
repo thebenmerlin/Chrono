@@ -22,6 +22,7 @@ interface WatchFaceProps {
   aqiLabel?: string | null
   speedKmh?: number | null
   limitKmh?: number | null
+  limitInferred?: boolean
   frozenDegrees?: { hour: number; minute: number; second: number }
 }
 
@@ -38,6 +39,7 @@ export default function WatchFace({
   aqiLabel,
   speedKmh,
   limitKmh,
+  limitInferred,
   frozenDegrees,
 }: WatchFaceProps) {
   const { mode } = useMode()
@@ -85,6 +87,7 @@ export default function WatchFace({
           aqiLabel={aqiLabel}
           speedKmh={speedKmh}
           limitKmh={limitKmh}
+          limitInferred={limitInferred}
         />
 
         {/* Tick marks */}

@@ -19,9 +19,10 @@ interface ModeOverlayProps {
   aqiLabel?: string | null
   speedKmh?: number | null
   limitKmh?: number | null
+  limitInferred?: boolean
 }
 
-export default function ModeOverlay({ outdoorC, aqi, aqiLabel, speedKmh, limitKmh }: ModeOverlayProps) {
+export default function ModeOverlay({ outdoorC, aqi, aqiLabel, speedKmh, limitKmh, limitInferred }: ModeOverlayProps) {
   const { mode, params } = useMode()
   const worldClock = useWorldClock(mode === 'worldclock' ? params.timezone : undefined)
 
@@ -40,7 +41,7 @@ export default function ModeOverlay({ outdoorC, aqi, aqiLabel, speedKmh, limitKm
       case 'aqi':
         return <AQIOverlay aqi={aqi} label={aqiLabel} />
       case 'speed':
-        return <SpeedOverlay speedKmh={speedKmh} limitKmh={limitKmh} />
+        return <SpeedOverlay speedKmh={speedKmh} limitKmh={limitKmh} limitInferred={limitInferred} />
       case 'worldclock':
         return <WorldClockOverlay city={worldClock?.cityLabel} utcOffset={worldClock?.utcOffset} />
       case 'planet':

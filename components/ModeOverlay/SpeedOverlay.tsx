@@ -1,22 +1,23 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { getSpeedAlertLevel, speedArcColor } from '@/lib/speedAlert'
+import { getSpeedAlertLevel, speedArcColor, computeMaxSpeed } from '@/lib/speedAlert'
 
 interface SpeedOverlayProps {
   speedKmh?: number | null
   limitKmh?: number | null
+  limitInferred?: boolean
 }
 
 // 300° clockwise arc from 7-o'clock (210°) to 5-o'clock (150°), radius 72
 // Precomputed endpoints: start (64, 162.35) → end (136, 162.35)
 const TRACK_PATH = 'M 64 162.35 A 72 72 0 1 1 136 162.35'
 
-export default function SpeedOverlay({ speedKmh, limitKmh }: SpeedOverlayProps) {
-  const speed = speedKmh ?? 0
-  const maxSpeed = limitKmh ? Math.max(limitKmh * 1.5, 120) : 180
-  const filled = Math.min(speed / maxSpeed, 1)
-  const level = getSpeedAlertLevel(speed, limitKmh ?? null)
+export default function SpeedOverlay({ speedKmh, limitKmh, limitInferred }: SpeedOverlayProps) {
+  const speed    = speedKmh ?? 0
+  const maxSpeed = computeMaxSpeed(limitKmh ?? null)
+  const filled   = Math.min(speed / maxSpeed, 1)
+  const level    = getSpeedAlertLevel(speed, limitKmh ?? null)
   const arcColor = speedArcColor(level, limitKmh != null)
 
   return (
@@ -59,17 +60,24 @@ export default function SpeedOverlay({ speedKmh, limitKmh }: SpeedOverlayProps) 
         km/h
       </text>
 
-      {/* Speed limit badge */}
-      {limitKmh && (
+      {/* Speed limit badge — tilde prefix when inferred from road type */}
+      {limitKmh != null && (
         <>
           <circle
             cx={140} cy={132} r={11}
             fill="white"
-            stroke="#ef4444"
+            stroke={limitInferred ? '#f59e0b' : '#ef4444'}
             strokeWidth={2}
           />
-          <text x={140} y={136} textAnchor="middle" fontSize="7" fill="#ef4444" fontFamily="var(--font-mono)" fontWeight="bold">
-            {limitKmh}
+          <text
+            x={limitInferred ? 138 : 140} y={136}
+            textAnchor="middle"
+            fontSize={limitInferred ? 5.5 : 7}
+            fill={limitInferred ? '#f59e0b' : '#ef4444'}
+            fontFamily="var(--font-mono)"
+            fontWeight="bold"
+          >
+            {limitInferred ? `~${limitKmh}` : `${limitKmh}`}
           </text>
         </>
       )}

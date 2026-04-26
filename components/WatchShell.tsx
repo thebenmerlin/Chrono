@@ -13,7 +13,7 @@ import { useAQI } from '@/hooks/useAQI'
 import { useSpeedLimit } from '@/hooks/useSpeedLimit'
 import { useSound } from '@/hooks/useSound'
 import { isMuteCommand, type ParsedCommand } from '@/lib/voiceCommands'
-import { getSpeedAlertLevel } from '@/lib/speedAlert'
+import { getSpeedAlertLevel, isSpeedAlertDismissable } from '@/lib/speedAlert'
 import WatchFace from './WatchFace'
 import StatusLine from './StatusLine'
 import ThemeToggle from './ThemeToggle'
@@ -64,8 +64,13 @@ function WatchApp() {
 
   // Speed limit — only when in speed mode and we have coords
   const speedLimitData = useSpeedLimit(geo.lat, geo.lon, mode === 'speed')
-  const limitKmh = speedLimitData?.limit_kmh ?? null
-  const currentSpeedKmh = geo.speed !== null ? geo.speed * 3.6 : null
+  const limitKmh       = speedLimitData?.limit_kmh ?? null
+  const limitInferred  = speedLimitData?.inferred ?? false
+
+  // Speed: default to 0 when GPS has a fix but device is stationary (speed=null is normal when still)
+  // Dead zone: GPS noise below 1 km/h is floored to 0
+  const rawSpeedKmh     = geo.lat !== null && !geo.error ? ((geo.speed ?? 0) * 3.6) : null
+  const currentSpeedKmh = rawSpeedKmh !== null ? (rawSpeedKmh < 1 ? 0 : rawSpeedKmh) : null
 
   // AQI alert — amber pulse when air quality is unhealthy
   useEffect(() => {
@@ -75,14 +80,22 @@ function WatchApp() {
   }, [aqiData?.aqi])
 
   // Overspeed alert — red bleed + vibrate when 10%+ over limit
+  // - Only fires for confirmed (non-inferred) speed limits
+  // - Hysteresis: triggers at ≥110%, dismisses only when back below 105%
+  // - Auto-dismisses when leaving speed mode or speed/limit become unavailable
   useEffect(() => {
-    if (mode !== 'speed' || currentSpeedKmh === null) return
+    if (mode !== 'speed' || currentSpeedKmh === null || limitKmh === null || limitInferred) {
+      if (alert.type === 'overspeed') dismissAlert()
+      return
+    }
     const level = getSpeedAlertLevel(currentSpeedKmh, limitKmh)
     if (level === 'danger' && !alert.active) {
-      triggerAlert('overspeed', limitKmh ? `${Math.round(currentSpeedKmh)} / ${limitKmh} km/h` : '')
+      triggerAlert('overspeed', `${Math.round(currentSpeedKmh)} / ${limitKmh} km/h`)
       if ('vibrate' in navigator) navigator.vibrate([100, 50, 100])
+    } else if (alert.type === 'overspeed' && alert.active && isSpeedAlertDismissable(currentSpeedKmh, limitKmh)) {
+      dismissAlert()
     }
-  }, [mode, currentSpeedKmh, limitKmh])
+  }, [mode, currentSpeedKmh, limitKmh, limitInferred])
 
   const handleCommand = useCallback((cmd: ParsedCommand) => {
     if (isMuteCommand(cmd.raw)) return
@@ -128,10 +141,10 @@ function WatchApp() {
       }
       case 'speed': {
         if (currentSpeedKmh !== null) {
-          const limitStr = limitKmh ? ` / ${limitKmh} limit` : ''
+          const limitStr = limitKmh ? ` / ${limitInferred ? '~' : ''}${limitKmh} limit` : ''
           return `${Math.round(currentSpeedKmh)} km/h${limitStr}`
         }
-        return geo.error ? 'GPS unavailable' : 'Speed active'
+        return geo.error ? 'GPS unavailable' : 'Acquiring GPS…'
       }
       case 'worldclock':
         return params.timezone
@@ -182,6 +195,7 @@ function WatchApp() {
             aqiLabel={aqiData?.label ?? null}
             speedKmh={currentSpeedKmh}
             limitKmh={limitKmh}
+            limitInferred={limitInferred}
             frozenDegrees={frozenDegrees}
             onTap={() => {
               if (!voice.supported) {

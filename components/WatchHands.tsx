@@ -5,7 +5,7 @@ import { useTime } from '@/hooks/useTime'
 import { useWorldClock } from '@/hooks/useWorldClock'
 import { useModeTransition } from '@/hooks/useModeTransition'
 import { getPlanetaryTime } from '@/lib/planetaryTime'
-import { getSpeedAlertLevel } from '@/lib/speedAlert'
+import { getSpeedAlertLevel, computeMaxSpeed } from '@/lib/speedAlert'
 import { useMemo } from 'react'
 import { motion } from 'framer-motion'
 import WatchHand from './WatchHand'
@@ -110,7 +110,7 @@ export default function WatchHands({
     minuteDeg = aqiToMinuteDeg(aqi)
     showSecond = false
   } else if (mode === 'speed') {
-    const maxSpeed = limitKmh ? Math.max(limitKmh * 1.5, 120) : 180
+    const maxSpeed = computeMaxSpeed(limitKmh ?? null)
     hourDeg = clockDeg.hour  // hour hand stays on clock time
     minuteDeg = speedToMinuteDeg(speedKmh ?? 0, maxSpeed)
     showSecond = false

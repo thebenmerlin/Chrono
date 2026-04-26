@@ -41,6 +41,9 @@ export function useGeolocation(active = false): GeolocationData {
       (err) => {
         setData((prev) => ({
           ...prev,
+          // Clear motion data on error — stale speed/heading would be misleading
+          speed: null,
+          heading: null,
           permissionState: err.code === 1 ? 'denied' : 'unknown',
           error: err.message,
         }))

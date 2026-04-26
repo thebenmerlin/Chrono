@@ -40,9 +40,20 @@ export default function WatchHand({
   return (
     <motion.g
       className={className}
-      style={{ transformOrigin: '50% 50%', transformBox: 'view-box' as const }}
       animate={{ rotate: degrees }}
       transition={springTransition}
+      style={{ transformBox: 'view-box' as const }}
+      transformTemplate={(props) => {
+        // CSS individual `rotate` property has patchy SVG support in some browsers.
+        // Force a classic `transform:` string instead, rotating around the SVG center
+        // (100, 100) using the translate–rotate–translate trick.
+        // With transformBox:view-box, 50% = 100 SVG user units = watch center.
+        const deg =
+          typeof props.rotate === 'number'
+            ? props.rotate
+            : parseFloat(String(props.rotate)) || 0
+        return `translate(50%, 50%) rotate(${deg}deg) translate(-50%, -50%)`
+      }}
     >
       {shadow && (
         <line

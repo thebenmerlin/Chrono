@@ -53,7 +53,7 @@ export function useVoice(onCommand: (cmd: ParsedCommand) => void): VoiceState {
       const transcript = e.results[e.results.length - 1][0].transcript.trim()
       const confidence = e.results[e.results.length - 1][0].confidence
 
-      if (confidence < 0.75) return
+      if (confidence < 0.3) return
 
       const cmd = parseVoiceCommand(transcript)
       if (cmd) {

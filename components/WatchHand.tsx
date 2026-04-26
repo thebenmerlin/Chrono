@@ -40,7 +40,7 @@ export default function WatchHand({
   return (
     <motion.g
       className={className}
-      style={{ transformOrigin: `${cx}px ${cy}px` }}
+      style={{ transformOrigin: '50% 50%', transformBox: 'view-box' as const }}
       animate={{ rotate: degrees }}
       transition={springTransition}
     >

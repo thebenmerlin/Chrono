@@ -1,7 +1,9 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
-import { useMotionValue, animate } from 'framer-motion'
+// Zero animation libraries. Rotation is a plain CSS `transform` style on a `<g>`.
+// CSS `transform: rotate()` on SVG elements is universally supported in modern browsers
+// (unlike Framer Motion 11's individual `rotate:` CSS property which SVG ignores).
+// transform-box: view-box + transform-origin: center → pivot at SVG (100,100).
 
 interface WatchHandProps {
   degrees: number
@@ -22,41 +24,22 @@ export default function WatchHand({
   className = '',
   hasLumeDot = false,
   shadow = true,
-  transition,
 }: WatchHandProps) {
-  // SVG viewBox is 200x200, center is 100,100
-  // Hand is drawn pointing UP (to 12), rotated by degrees
   const cx = 100
   const cy = 100
-  const r = 90 * length
+  const r    = 90 * length
   const tail = 90 * 0.15
 
-  const stiffness = transition?.stiffness ?? 80
-  const damping   = transition?.damping   ?? 18
-  const mass      = transition?.mass      ?? 1.2
-
-  // Bypass Framer Motion's CSS transform system entirely.
-  // useMotionValue + animate() drives the value; onUpdate writes it
-  // directly as a native SVG `transform` attribute which every browser
-  // supports unconditionally.
-  const rotation = useMotionValue(degrees)
-  const gRef = useRef<SVGGElement>(null)
-
-  useEffect(() => {
-    const controls = animate(rotation, degrees, {
-      type: 'spring',
-      stiffness,
-      damping,
-      mass,
-      onUpdate: (val) => {
-        gRef.current?.setAttribute('transform', `rotate(${val}, 100, 100)`)
-      },
-    })
-    return () => controls.stop()
-  }, [rotation, degrees, stiffness, damping, mass])
-
   return (
-    <g ref={gRef} className={className}>
+    <g
+      className={className}
+      style={{
+        transform: `rotate(${degrees}deg)`,
+        transformBox: 'view-box' as const,
+        transformOrigin: 'center',
+        transition: 'transform 200ms ease-out',
+      }}
+    >
       {shadow && (
         <line
           x1={cx + 1}

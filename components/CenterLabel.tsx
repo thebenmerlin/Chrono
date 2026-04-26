@@ -52,10 +52,11 @@ export default function CenterLabel({ mode, isListening }: CenterLabelProps) {
           fill="var(--text-secondary)"
           fontFamily="var(--font-mono)"
           letterSpacing="2"
-          initial={{ opacity: 0, fontSize: '10' }}
-          animate={{ opacity: 1, fontSize: '6' }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.5, ease: 'easeOut' }}
+          style={{ transformBox: 'fill-box', transformOrigin: '50% 50%' }}
+          initial={{ opacity: 0, scale: 1.7 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.85 }}
+          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
         >
           {label}
         </motion.text>

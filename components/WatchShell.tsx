@@ -11,6 +11,7 @@ import { useGeolocation } from '@/hooks/useGeolocation'
 import { useWeather } from '@/hooks/useWeather'
 import { useAQI } from '@/hooks/useAQI'
 import { useSpeedLimit } from '@/hooks/useSpeedLimit'
+import { useSound } from '@/hooks/useSound'
 import { isMuteCommand, type ParsedCommand } from '@/lib/voiceCommands'
 import { getSpeedAlertLevel } from '@/lib/speedAlert'
 import WatchFace from './WatchFace'
@@ -32,6 +33,7 @@ function WatchApp() {
   const { alert, trigger: triggerAlert, dismiss: dismissAlert } = useAlert()
   const clockDeg = useTime()
   const compass = useCompass()
+  const { click: playClick } = useSound()
 
   const [frozenDegrees, setFrozenDegrees] = useState<{ hour: number; minute: number; second: number } | undefined>()
 
@@ -51,6 +53,13 @@ function WatchApp() {
       requestCompassPermission()
     }
   }, [mode, compass.permissionState])
+
+  // Mechanical click on every mode switch (skip initial mount)
+  const hasMounted = useRef(false)
+  useEffect(() => {
+    if (!hasMounted.current) { hasMounted.current = true; return }
+    playClick()
+  }, [mode])
 
   // Speed limit — only when in speed mode and we have coords
   const speedLimitData = useSpeedLimit(geo.lat, geo.lon, mode === 'speed')
@@ -141,47 +150,53 @@ function WatchApp() {
 
   return (
     <main
-      className="relative flex flex-col items-center justify-center min-h-dvh select-none"
+      className="relative flex items-center justify-center min-h-dvh select-none"
       style={{ background: 'var(--face-bg)', transition: 'background 0.4s' }}
     >
-      <ThemeToggle currentTheme={theme} nextTheme={nextTheme} onCycle={cycleTheme} />
-
-      <div className="relative">
-        <VoiceTrigger
-          isMuted={voice.isMuted}
-          isHearing={voice.isHearing}
-          isRecognising={voice.isRecognising}
-          supported={voice.supported}
-          onToggle={voice.toggleMute}
+      <div className="relative w-full max-w-sm mx-auto flex flex-col items-center justify-center min-h-dvh px-2">
+        <ThemeToggle
+          currentTheme={theme}
+          nextTheme={nextTheme}
+          onCycle={() => { cycleTheme(); playClick() }}
         />
 
-        <WatchFace
-          isMuted={voice.isMuted}
-          isHearing={voice.isHearing}
-          isRecognising={voice.isRecognising}
-          alert={alert}
-          compassBearing={compass.bearing}
-          geoHeading={geo.heading}
-          outdoorC={weatherData?.temp_c ?? null}
-          aqi={aqiData?.aqi ?? null}
-          aqiLabel={aqiData?.label ?? null}
-          speedKmh={currentSpeedKmh}
-          limitKmh={limitKmh}
-          frozenDegrees={frozenDegrees}
-          onTap={() => {
-            if (!voice.supported) {
-              const cycle: Parameters<typeof setMode>[0][] = [
-                'clock', 'compass', 'temperature', 'aqi', 'speed', 'worldclock', 'planet', 'anticlockwise',
-              ]
-              const idx = cycle.indexOf(mode as Parameters<typeof setMode>[0])
-              setMode(cycle[(idx + 1) % cycle.length], {})
-            }
-          }}
-        />
+        <div className="relative">
+          <VoiceTrigger
+            isMuted={voice.isMuted}
+            isHearing={voice.isHearing}
+            isRecognising={voice.isRecognising}
+            supported={voice.supported}
+            onToggle={voice.toggleMute}
+          />
+
+          <WatchFace
+            isMuted={voice.isMuted}
+            isHearing={voice.isHearing}
+            isRecognising={voice.isRecognising}
+            alert={alert}
+            compassBearing={compass.bearing}
+            geoHeading={geo.heading}
+            outdoorC={weatherData?.temp_c ?? null}
+            aqi={aqiData?.aqi ?? null}
+            aqiLabel={aqiData?.label ?? null}
+            speedKmh={currentSpeedKmh}
+            limitKmh={limitKmh}
+            frozenDegrees={frozenDegrees}
+            onTap={() => {
+              if (!voice.supported) {
+                const cycle: Parameters<typeof setMode>[0][] = [
+                  'clock', 'compass', 'temperature', 'aqi', 'speed', 'worldclock', 'planet', 'anticlockwise',
+                ]
+                const idx = cycle.indexOf(mode as Parameters<typeof setMode>[0])
+                setMode(cycle[(idx + 1) % cycle.length], {})
+              }
+            }}
+          />
+        </div>
+
+        <StatusLine text={statusText()} />
+        <ModeQuickBar />
       </div>
-
-      <StatusLine text={statusText()} />
-      <ModeQuickBar />
     </main>
   )
 }

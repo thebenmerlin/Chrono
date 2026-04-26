@@ -76,3 +76,15 @@ body {
   transform-origin: 50% 100%;
   transform-box: fill-box;
 }
+
+/* Desktop: subtle vignette so watch feels anchored on wide screens */
+@media (min-width: 640px) {
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(ellipse 55% 75% at 50% 50%, transparent 50%, rgba(0, 0, 0, 0.12) 100%);
+    z-index: 0;
+  }
+}

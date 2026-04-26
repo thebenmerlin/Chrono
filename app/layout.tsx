@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import { JetBrains_Mono } from 'next/font/google'
+import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar'
 import './globals.css'
 
 const mono = JetBrains_Mono({
@@ -30,6 +31,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className={`${mono.variable} font-mono antialiased`}>
+        <ServiceWorkerRegistrar />
         {children}
       </body>
     </html>

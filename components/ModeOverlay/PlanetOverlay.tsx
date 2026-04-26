@@ -9,22 +9,9 @@ const STAR_POSITIONS = [
 interface PlanetOverlayProps {
   planet?: string
   timeLabel?: string
-  timeFactor?: number  // >1 = faster than Earth, <1 = slower
 }
 
-function formatDilation(f: number): string {
-  if (f > 0.95 && f < 1.05) return '≈ EARTH TIME'
-  if (f >= 1.05) {
-    const x = f < 10 ? f.toFixed(1) : Math.round(f)
-    return `×${x} FASTER`
-  }
-  // f < 0.95: invert and show as "slower"
-  const inv = 1 / f
-  const x = inv < 10 ? inv.toFixed(1) : Math.round(inv)
-  return `×${x} SLOWER`
-}
-
-export default function PlanetOverlay({ planet, timeLabel, timeFactor }: PlanetOverlayProps) {
+export default function PlanetOverlay({ planet, timeLabel }: PlanetOverlayProps) {
   return (
     <g>
       {/* Star dots */}
@@ -35,7 +22,7 @@ export default function PlanetOverlay({ planet, timeLabel, timeFactor }: PlanetO
       {planet && (
         <text
           x={100}
-          y={122}
+          y={120}
           textAnchor="middle"
           fontSize="7"
           fill="var(--text-secondary)"
@@ -48,26 +35,13 @@ export default function PlanetOverlay({ planet, timeLabel, timeFactor }: PlanetO
       {timeLabel && (
         <text
           x={100}
-          y={135}
+          y={130}
           textAnchor="middle"
           fontSize="9"
           fill="var(--accent)"
           fontFamily="var(--font-mono)"
         >
           {timeLabel}
-        </text>
-      )}
-      {timeFactor !== undefined && (
-        <text
-          x={100}
-          y={148}
-          textAnchor="middle"
-          fontSize="5.5"
-          fill="var(--text-secondary)"
-          fontFamily="var(--font-mono)"
-          opacity={0.75}
-        >
-          {formatDilation(timeFactor)}
         </text>
       )}
     </g>

@@ -16,6 +16,11 @@ export const metadata: Metadata = {
     capable: true,
     statusBarStyle: 'black-translucent',
     title: 'Chrono',
+    startupImage: '/icon.png',
+  },
+  icons: {
+    apple: '/icon.png',
+    icon: '/icon.png',
   },
 }
 

@@ -44,7 +44,7 @@ export default function ModeOverlay({ outdoorC, aqi, aqiLabel, speedKmh, limitKm
       case 'worldclock':
         return <WorldClockOverlay city={worldClock?.cityLabel} utcOffset={worldClock?.utcOffset} />
       case 'planet':
-        return <PlanetOverlay planet={params.planet} timeLabel={planetTime?.label} timeFactor={planetTime?.timeFactor} />
+        return <PlanetOverlay planet={params.planet} timeLabel={planetTime?.label} />
       default:
         return <NullOverlay />
     }

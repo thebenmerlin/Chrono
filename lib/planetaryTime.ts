@@ -1,11 +1,9 @@
 export interface PlanetaryTimeResult {
   hourDeg: number      // 0–360, for hour hand
   minuteDeg: number    // 0–360, for minute hand
-  secondDeg: number    // 0–360, for second hand (speed reflects planetary day length)
   label: string        // e.g. "14:22"
   planet: string
   dayLengthHours: number
-  timeFactor: number   // how fast local time flows vs Earth (>1 = faster, <1 = slower)
 }
 
 // Solar day lengths in Earth hours
@@ -41,14 +39,8 @@ export function getPlanetaryTime(planet: string): PlanetaryTimeResult {
 
   const hourDeg = h * 30 + m * 0.5
   const minuteDeg = m * 6 + s * 0.1
-  // Time factor: how fast local time flows vs Earth (>1 = faster, <1 = slower)
-  const timeFactor = 24 / dayHours
-  // Second hand: non-modulo accumulated rotation so CSS always animates forward (no backward wrap)
-  // At timeFactor=2.42 (Jupiter), the hand completes one revolution every ~24.8 real seconds
-  // At timeFactor=0.017 (Mercury), the hand barely moves — one revolution every ~58 real minutes
-  const secondDeg = (nowMs / 1000) * timeFactor * 6
 
   const label = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`
 
-  return { hourDeg, minuteDeg, secondDeg, label, planet: name, dayLengthHours: dayHours, timeFactor }
+  return { hourDeg, minuteDeg, label, planet: name, dayLengthHours: dayHours }
 }

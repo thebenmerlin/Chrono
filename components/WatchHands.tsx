@@ -85,9 +85,7 @@ export default function WatchHands({
   } else if (mode === 'planet' && planetaryTime) {
     hourDeg = planetaryTime.hourDeg
     minuteDeg = planetaryTime.minuteDeg
-    // Second hand sweeps at planet's rotation rate — visual proof of time dilation
-    secondDeg = planetaryTime.secondDeg
-    showSecond = true
+    showSecond = false
   } else if (mode === 'compass' && compassBearing !== null && compassBearing !== undefined) {
     const directionOffset =
       params.direction === 'north' ? 0
